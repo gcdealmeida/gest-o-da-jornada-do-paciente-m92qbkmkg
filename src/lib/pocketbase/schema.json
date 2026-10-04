@@ -1,0 +1,740 @@
+{
+  "generatedAt": "2026-10-04T17:34:24.333Z",
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "apiRules": {
+        "list": "id = @request.auth.id",
+        "view": "id = @request.auth.id",
+        "create": "",
+        "update": "id = @request.auth.id",
+        "delete": "id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "avatar",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "role",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["Gestor", "Coordenador", "Recepcionista"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
+        "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+      ]
+    },
+    {
+      "name": "patients",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "instagram",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "channel_origin",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["whatsapp", "instagram", "email", "outros"]
+        },
+        {
+          "name": "stage",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "primeiro_contato",
+            "avaliacao",
+            "fechamento_programa",
+            "acompanhamento",
+            "renovacao",
+            "reativacao"
+          ]
+        },
+        {
+          "name": "responsible_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "tags",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["prioridade", "lead_quente", "retorno", "pausa", "vip"]
+        },
+        {
+          "name": "value_monthly",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "score",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "last_contact_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_patients_stage ON patients (stage)",
+        "CREATE INDEX idx_patients_phone ON patients (phone)",
+        "CREATE INDEX idx_patients_responsible ON patients (responsible_id)",
+        "CREATE INDEX idx_patients_last_contact ON patients (last_contact_at)"
+      ]
+    },
+    {
+      "name": "journey_events",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "patient_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "patients"
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "contato_inicial",
+            "mudanca_estagio",
+            "automacao",
+            "mensagem",
+            "tarefa",
+            "agendamento",
+            "anotacao"
+          ]
+        },
+        {
+          "name": "stage",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "primeiro_contato",
+            "avaliacao",
+            "fechamento_programa",
+            "acompanhamento",
+            "renovacao",
+            "reativacao"
+          ]
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "responsible_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "is_automatic",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "metadata",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_je_patient ON journey_events (patient_id)",
+        "CREATE INDEX idx_je_type ON journey_events (type)",
+        "CREATE INDEX idx_je_stage ON journey_events (stage)",
+        "CREATE INDEX idx_je_created ON journey_events (created)"
+      ]
+    },
+    {
+      "name": "conversations",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "patient_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "patients"
+        },
+        {
+          "name": "channel",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["whatsapp", "instagram", "email", "outros"]
+        },
+        {
+          "name": "contact_identifier",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "last_message_preview",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "last_message_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "unread_count",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["aberta", "fechada"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_conv_patient ON conversations (patient_id)",
+        "CREATE INDEX idx_conv_contact ON conversations (contact_identifier)",
+        "CREATE INDEX idx_conv_last_msg ON conversations (last_message_at)",
+        "CREATE INDEX idx_conv_status ON conversations (status)"
+      ]
+    },
+    {
+      "name": "messages",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "conversation_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "conversations"
+        },
+        {
+          "name": "sender",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["inbound", "outbound", "system"]
+        },
+        {
+          "name": "channel",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["whatsapp", "instagram", "email", "outros"]
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "sent_by",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "is_automatic",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_msg_conv ON messages (conversation_id)",
+        "CREATE INDEX idx_msg_created ON messages (created)"
+      ]
+    },
+    {
+      "name": "tasks",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "patient_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "patients"
+        },
+        {
+          "name": "assigned_to",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "due_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "priority",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["alta", "media", "baixa"]
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["a_fazer", "em_andamento", "concluida"]
+        },
+        {
+          "name": "completed_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_tasks_patient ON tasks (patient_id)",
+        "CREATE INDEX idx_tasks_assigned ON tasks (assigned_to)",
+        "CREATE INDEX idx_tasks_due ON tasks (due_at)",
+        "CREATE INDEX idx_tasks_status ON tasks (status)",
+        "CREATE INDEX idx_tasks_priority ON tasks (priority)"
+      ]
+    },
+    {
+      "name": "appointments",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "patient_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "patients"
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["avaliacao", "consulta", "retorno", "reuniao"]
+        },
+        {
+          "name": "start_at",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "end_at",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "responsible_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["confirmado", "pendente", "concluido", "cancelado"]
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_app_patient ON appointments (patient_id)",
+        "CREATE INDEX idx_app_start ON appointments (start_at)",
+        "CREATE INDEX idx_app_responsible ON appointments (responsible_id)",
+        "CREATE INDEX idx_app_status ON appointments (status)"
+      ]
+    },
+    {
+      "name": "automations",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "trigger_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "novo_contato",
+            "mudanca_estagio",
+            "inatividade",
+            "consulta_agendada",
+            "data_proxima"
+          ]
+        },
+        {
+          "name": "trigger_config",
+          "type": "json",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "action_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "enviar_mensagem",
+            "mover_funil",
+            "criar_tarefa",
+            "criar_lembrete",
+            "notificar_membro"
+          ]
+        },
+        {
+          "name": "action_config",
+          "type": "json",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "message_template",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "enabled",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE UNIQUE INDEX idx_automations_name ON automations (name)"]
+    },
+    {
+      "name": "automation_logs",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "automation_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "automations"
+        },
+        {
+          "name": "patient_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "patients"
+        },
+        {
+          "name": "trigger",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "action",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["sucesso", "falha"]
+        },
+        {
+          "name": "details",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_autologs_auto ON automation_logs (automation_id)",
+        "CREATE INDEX idx_autologs_patient ON automation_logs (patient_id)",
+        "CREATE INDEX idx_autologs_created ON automation_logs (created)"
+      ]
+    }
+  ]
+}
