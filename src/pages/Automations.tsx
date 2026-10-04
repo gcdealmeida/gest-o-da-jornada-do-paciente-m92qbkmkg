@@ -49,7 +49,9 @@ export default function Automations() {
   const [name, setName] = useState('')
   const [triggerType, setTriggerType] = useState<AutomationRecord['trigger_type']>('novo_contato')
   const [actionType, setActionType] = useState<AutomationRecord['action_type']>('enviar_mensagem')
-  const [template, setTemplate] = useState('Olá {paciente.nome}, tudo bem?')
+  const [template, setTemplate] = useState(
+    'Oi, {paciente.nome}! Passando para saber como você está… me conta um pouco do que está acontecendo para conseguirmos direcionar você da melhor maneira?',
+  )
   const [saving, setSaving] = useState(false)
 
   const { toast } = useToast()
@@ -145,7 +147,9 @@ export default function Automations() {
     setName('')
     setTriggerType('novo_contato')
     setActionType('enviar_mensagem')
-    setTemplate('Olá {paciente.nome}, tudo bem?')
+    setTemplate(
+      'Oi, {paciente.nome}! Passando para saber como você está… me conta um pouco do que está acontecendo para conseguirmos direcionar você da melhor maneira?',
+    )
   }
 
   const getActionIcon = (type: string) => {
@@ -166,11 +170,17 @@ export default function Automations() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Motor de Automações da Jornada
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Motor de Automações da Jornada
+            </h1>
+            <Badge className="bg-amber-50 text-amber-900 border-amber-200/80 text-xs font-semibold">
+              Padrão Clínica SOUL
+            </Badge>
+          </div>
           <p className="text-sm text-slate-500 font-medium">
-            Gatilhos automáticos para follow-ups no WhatsApp, movimentação de estágio e tarefas
+            Gatilhos com tom acolhedor, humano e sem pressão — "Excelência no cuidado. Resultado
+            para a vida."
           </p>
         </div>
         <Button
@@ -183,6 +193,30 @@ export default function Automations() {
           <Plus className="w-4 h-4 mr-1.5" />
           Nova Regra
         </Button>
+      </div>
+
+      {/* Banner de Posicionamento SOUL */}
+      <div className="p-3.5 bg-gradient-to-r from-amber-50/70 via-stone-50 to-teal-50/50 rounded-xl border border-amber-200/60 text-xs text-stone-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="space-y-0.5">
+          <p className="font-bold text-stone-900 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-amber-600" />
+            Diretriz de Comunicação SOUL: Venda por compreensão, nunca por pressão
+          </p>
+          <p className="text-stone-600 text-[11px] leading-relaxed">
+            Todas as mensagens seguem a escuta empática e terminam com perguntas abertas
+            acolhedoras. A primeira pergunta-guia orienta o cuidado:{' '}
+            <span className="font-semibold text-stone-800">
+              "Me conta um pouco do que está acontecendo para conseguirmos direcionar você da melhor
+              maneira."
+            </span>
+          </p>
+        </div>
+        <Badge
+          variant="outline"
+          className="border-amber-300 text-amber-800 bg-white font-medium text-[10px] shrink-0 self-start sm:self-center"
+        >
+          Vinhedo/SP • ex-SportFisio
+        </Badge>
       </div>
 
       <Tabs defaultValue="library" className="space-y-4">

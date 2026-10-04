@@ -150,10 +150,11 @@ export default function Conversations() {
         setTimeout(async () => {
           setIsTyping(false)
           const simulatedReplies = [
-            'Muito obrigada pelo retorno tão rápido! Combinado então.',
-            'Entendido! Vou verificar minha disponibilidade e retorno.',
-            'Perfeito! Adorei a explicação, vocês são super atenciosos.',
-            'Qual o endereço exato da clínica para que eu possa me programar?',
+            'Muito obrigada pelo acolhimento tão humano! Vou verificar a agenda com o Dr. Guilherme.',
+            'Vocês atendem pelo plano de saúde ou fornecem nota para reembolso?',
+            'Estou com bastante dor na lombar há meses, tem atrapalhado meu trabalho. Como funciona a avaliação?',
+            'Qual o valor para eu fazer a avaliação com o Dr. Guilherme?',
+            'Perfeito, adorei a atenção de vocês na Clínica SOUL!',
           ]
           const randomReply = simulatedReplies[Math.floor(Math.random() * simulatedReplies.length)]
           await crmService.simulateInboundMessage(selectedConv.id, randomReply)

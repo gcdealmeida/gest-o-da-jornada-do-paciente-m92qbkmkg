@@ -31,10 +31,11 @@ interface AgentMessage {
 }
 
 const SUGGESTED_PROMPTS = [
-  'Liste pacientes em Renovação atrasada',
-  'Quem precisa de follow-up hoje?',
-  'Resuma a jornada de última conversa',
-  'Crie tarefas para os próximos retornos',
+  'Me conta um pouco do que está acontecendo...',
+  'Vocês atendem convênio ou plano?',
+  'Como funciona a avaliação com o Dr. Guilherme?',
+  'Qual o valor da avaliação?',
+  'Como reativar contatos da antiga SportFisio?',
 ]
 
 export default function Agents() {
@@ -43,7 +44,7 @@ export default function Agents() {
       id: 'welcome',
       sender: 'agent',
       content:
-        'Olá! Sou o Assistente da Jornada. Estou conectado aos dados de pacientes, funil, tarefas e agendamentos da clínica. Como posso te apoiar no controle da jornada hoje?',
+        'Olá! Sou o Assistente da Jornada da Clínica SOUL. Estou aqui para cuidar da jornada dos nossos pacientes com escuta, acolhimento e excelência: "Excelência no cuidado. Resultado para a vida." Como posso te apoiar hoje?',
       time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     },
   ])
@@ -128,25 +129,52 @@ export default function Agents() {
         }
       }
     } catch (_) {
-      // Realistic fallback response using client data context
-      let fallbackText = 'Analisei os registros da clínica. '
-      if (text.includes('Renovação') || text.includes('renovação')) {
-        fallbackText +=
-          'Temos Carlos Eduardo Lima com contrato anual terminando em breve (estágio Renovação). Recomendo agendar uma consulta de revisão para apresentar propostas de continuidade com 10% de desconto.'
-      } else if (text.includes('follow-up') || text.includes('Follow-up')) {
-        fallbackText +=
-          'Fernanda Nogueira (Reativação) e Camila Rodrigues (Primeiro Contato) possuem mensagens aguardando retorno há mais de 24 horas. Já sugeri tarefas prioritárias para a recepção.'
-      } else if (text.includes('tarefas') || text.includes('retornos')) {
-        fallbackText +=
-          'Identifiquei 2 retornos programados para esta semana: Beatriz Fonseca (acompanhamento sessão 6) e Mariana Pires. Deseja que eu crie tarefas automáticas de confirmação com 2h de antecedência?'
-      } else if (text.includes('Lead Frio') || text.includes('lead frio')) {
-        fallbackText +=
-          'Identifiquei Rodrigo Albuquerque no estágio Lead Frio (sem resposta há mais de 15 dias). Deseja que eu elabore uma mensagem de resgate com abordagem mais suave?'
-      } else if (text.includes('negociação') || text.includes('Negociação')) {
-        fallbackText +=
-          'Na etapa Em Negociação temos Lucas Mendonça. Se ele não for seguir o programa de tratamento, podemos direcioná-lo imediatamente para Reativação.'
+      // Realistic fallback response using the official SOUL script & guidelines
+      const lower = text.toLowerCase()
+      let fallbackText = ''
+
+      if (lower.includes('convênio') || lower.includes('convenio') || lower.includes('plano')) {
+        fallbackText =
+          'Olha, como estou lhe dizendo, nosso programa é totalmente individualizado, com avaliação específica e completa. Trabalhamos diferente do convênio, por isso oferecemos aos clientes a nota fiscal ou recibo para tentar reembolso. Acho que, se você já teve experiência com convênio, sabe do que estamos falando. Mas caso não conheça, lhe convido para conhecer nossos serviços.\n\nMe conta um pouco do que está acontecendo para conseguirmos direcionar você da melhor maneira?'
+      } else if (
+        lower.includes('valor') ||
+        lower.includes('preço') ||
+        lower.includes('preco') ||
+        lower.includes('quanto custa')
+      ) {
+        fallbackText =
+          'Se eu lhe disser que pode ter um custo de zero reais, te ajudaria?\n\nComo funciona: se você vier e, diante da apresentação, optar por qualquer um dos programas que você e o Dr. Guilherme montarem, não iremos lhe cobrar nada! Mas caso NÃO queira, o Dr. Guilherme irá lhe dar a avaliação completa em mãos, com toda a orientação para buscar outra forma de resolver seu problema — nesse caso o custo da avaliação é de R$ 670.'
+      } else if (
+        lower.includes('como funciona') ||
+        lower.includes('avaliação') ||
+        lower.includes('avaliacao') ||
+        lower.includes('dr. guilherme') ||
+        lower.includes('dr guilherme')
+      ) {
+        fallbackText =
+          'Nossa avaliação é estruturada em 4 momentos com o Dr. Guilherme Vasconcelos:\n\n1º Momento: Avaliação por completa com o Dr. Guilherme — mais de 10 testes, testes físicos quando necessário, avaliação funcional e questionamentos para entender especificamente o seu caso;\n2º Momento: Explicar o que você tem e como isso tem te afetado;\n3º Momento: O Dr. já explica como começar o tratamento, para você já sair daqui sabendo exatamente o que fazer;\n4º Momento: Junto com você, montar o programa de tratamento da melhor forma para atender suas necessidades físicas e resolver o problema.\n\nO que achou? Vamos agendar sua avaliação?'
+      } else if (
+        lower.includes('dor') ||
+        lower.includes('costas') ||
+        lower.includes('coluna') ||
+        lower.includes('joelho') ||
+        lower.includes('fisioterapia')
+      ) {
+        fallbackText =
+          'Sabemos como as dores nos limitam, às vezes até mesmo para trabalhar ou descansar. Isso tem acontecido com você? Alguma coisa você tem tido dificuldade de fazer por conta da dor, ou nem tem feito por conta dela?'
+      } else if (
+        lower.includes('sportfisio') ||
+        lower.includes('reativar') ||
+        lower.includes('lead frio')
+      ) {
+        fallbackText =
+          'Para contatos antigos e leads frios, utilizamos a mensagem institucional de reconexão sem cobrança:\n\n"A SportFisio evoluiu para a SOUL. Hoje nosso trabalho integra reabilitação, movimento, prevenção, performance e longevidade. Como você está?"\n\nEssa abordagem acolhe a transição histórica e convida o paciente a compartilhar como está sua saúde hoje.'
+      } else if (lower.includes('renovação') || lower.includes('renovacao')) {
+        fallbackText =
+          'Na etapa de Renovação (<30 dias), o foco não é apenas renovar uma sessão, mas promover a capacidade ao longo da vida:\n\n"Oi, [nome]! Seu ciclo de cuidado está se aproximando do final. O propósito da SOUL é te acompanhar para viver mais, melhor e com maior capacidade. Como você avalia as dificuldades iniciais hoje, e o que acha de planejarmos a continuidade da sua saúde preventiva para os próximos meses?"'
       } else {
-        fallbackText += `Entendido perfeitamente. Verifiquei os 7 estágios ativos do funil (Lead Frio até Reativação) e o histórico das conversas recentes. Todos os dados permanecem sincronizados em tempo real com a equipe.`
+        fallbackText =
+          'Olá! Me conta um pouco do que está acontecendo para conseguirmos direcionar você da melhor maneira. Aqui na Clínica SOUL cuidamos de pessoas de forma integral, sem pressa e focados na sua capacidade para a vida.'
       }
 
       setMessages((prev) =>
@@ -194,15 +222,18 @@ export default function Agents() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-slate-900">Assistente da Jornada</h3>
+                    <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[10px] font-semibold">
+                      Roteiro SOUL Vinhedo
+                    </Badge>
                     <Badge
                       variant="outline"
                       className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]"
                     >
-                      Ativo • Tier Fast
+                      Tier Fast
                     </Badge>
                   </div>
                   <p className="text-[11px] text-slate-500">
-                    Conectado ao banco do paciente, agenda e funil
+                    Clínica SOUL — "Excelência no cuidado. Resultado para a vida."
                   </p>
                 </div>
               </div>
@@ -365,14 +396,44 @@ export default function Agents() {
               </div>
             </div>
 
+            {/* Diretrizes da Clínica SOUL */}
+            <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/70 text-xs text-stone-800 space-y-2">
+              <p className="font-bold text-stone-900 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                Princípios SOUL
+              </p>
+              <ul className="text-[11px] text-stone-600 space-y-1 leading-tight list-disc pl-3.5">
+                <li>
+                  <strong className="text-stone-800">Primeira pergunta:</strong> "Me conta um pouco
+                  do que está acontecendo..."
+                </li>
+                <li>
+                  <strong className="text-stone-800">Venda por compreensão:</strong> Sem medo,
+                  pressão ou falsa urgência.
+                </li>
+                <li>
+                  <strong className="text-stone-800">4 Momentos:</strong> Testes completos com Dr.
+                  Guilherme, explicação, orientação imediata e programa conjunto.
+                </li>
+                <li>
+                  <strong className="text-stone-800">Convênio:</strong> Não atendemos direto;
+                  emitimos recibo/NF para reembolso.
+                </li>
+                <li>
+                  <strong className="text-stone-800">Valor Avaliação:</strong> R$ 0 se optar pelo
+                  programa; R$ 670 se levar o laudo.
+                </li>
+              </ul>
+            </div>
+
             <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-200/60 text-xs text-teal-900 space-y-1">
               <p className="font-bold flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-teal-600" />
                 Segurança & Escopo
               </p>
               <p className="text-[11px] text-slate-600 leading-snug">
-                O assistente é bloqueado para fornecer orientações médicas ou diagnósticos clínicos.
-                Respostas restritas à jornada e relacionamento.
+                O assistente não fornece diagnóstico médico. O foco é acolhimento, triagem da
+                capacidade e agendamento da avaliação inicial.
               </p>
             </div>
           </Card>
