@@ -75,9 +75,10 @@ export default function Index() {
 
   // KPIs
   const openConversationsCount = 6
-  const newContacts7Days = patients.filter((p) => p.stage === 'primeiro_contato').length || 2
+  const newContacts7Days =
+    patients.filter((p) => p.stage === 'primeiro_contato' || p.stage === 'agendamento').length || 2
   const closedCount = patients.filter(
-    (p) => p.stage === 'acompanhamento' || p.stage === 'fechamento_programa',
+    (p) => p.stage === 'em_negociacao' || p.stage === 'renovacao',
   ).length
   const totalCount = patients.length || 1
   const conversionRate = Math.round((closedCount / totalCount) * 100)
@@ -239,25 +240,32 @@ export default function Index() {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
             {STAGES.map((st) => {
               const count = patients.filter((p) => p.stage === st.id).length
               return (
                 <Link
                   key={st.id}
-                  to={`/funnel?stage=${st.id}`}
-                  className="p-3 rounded-xl border border-slate-200/90 hover:border-teal-400 hover:bg-slate-50/80 transition-all group"
+                  to={`/funnel`}
+                  className="p-3 rounded-xl border border-slate-200/90 hover:border-teal-400 hover:bg-slate-50/80 transition-all group flex flex-col justify-between"
                 >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: st.color }}
-                    />
-                    <span className="text-xs font-bold text-slate-700 group-hover:text-teal-700">
-                      {count}
-                    </span>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: st.color }}
+                      />
+                      <span className="text-xs font-bold text-slate-700 group-hover:text-teal-700">
+                        {count}
+                      </span>
+                    </div>
+                    <p
+                      className="text-xs font-semibold text-slate-800 mt-2 truncate"
+                      title={st.name}
+                    >
+                      {st.name}
+                    </p>
                   </div>
-                  <p className="text-xs font-semibold text-slate-800 mt-2 truncate">{st.name}</p>
                   <div className="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"

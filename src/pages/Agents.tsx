@@ -139,8 +139,14 @@ export default function Agents() {
       } else if (text.includes('tarefas') || text.includes('retornos')) {
         fallbackText +=
           'Identifiquei 2 retornos programados para esta semana: Beatriz Fonseca (acompanhamento sessão 6) e Mariana Pires. Deseja que eu crie tarefas automáticas de confirmação com 2h de antecedência?'
+      } else if (text.includes('Lead Frio') || text.includes('lead frio')) {
+        fallbackText +=
+          'Identifiquei Rodrigo Albuquerque no estágio Lead Frio (sem resposta há mais de 15 dias). Deseja que eu elabore uma mensagem de resgate com abordagem mais suave?'
+      } else if (text.includes('negociação') || text.includes('Negociação')) {
+        fallbackText +=
+          'Na etapa Em Negociação temos Lucas Mendonça. Se ele não for seguir o programa de tratamento, podemos direcioná-lo imediatamente para Reativação.'
       } else {
-        fallbackText += `Entendido perfeitamente. Verifiquei os 6 estágios ativos e o histórico das conversas recentes. Todos os dados permanecem sincronizados em tempo real com a equipe.`
+        fallbackText += `Entendido perfeitamente. Verifiquei os 7 estágios ativos do funil (Lead Frio até Reativação) e o histórico das conversas recentes. Todos os dados permanecem sincronizados em tempo real com a equipe.`
       }
 
       setMessages((prev) =>

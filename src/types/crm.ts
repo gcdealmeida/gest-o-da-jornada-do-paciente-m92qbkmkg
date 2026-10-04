@@ -1,10 +1,11 @@
 export type ChannelType = 'whatsapp' | 'instagram' | 'email' | 'outros'
 
 export type StageId =
+  | 'lead_frio'
   | 'primeiro_contato'
-  | 'avaliacao'
-  | 'fechamento_programa'
-  | 'acompanhamento'
+  | 'agendamento'
+  | 'monitoramento'
+  | 'em_negociacao'
   | 'renovacao'
   | 'reativacao'
 
@@ -171,42 +172,82 @@ export interface AutomationLogRecord {
   }
 }
 
-export const STAGES: { id: StageId; name: string; color: string; description: string }[] = [
+export const STAGES: {
+  id: StageId
+  name: string
+  color: string
+  bgLight: string
+  borderLight: string
+  description: string
+  detail: string
+}[] = [
+  {
+    id: 'lead_frio',
+    name: 'Lead Frio',
+    color: '#64748B', // tom frio cinza-azulado
+    bgLight: 'bg-slate-50',
+    borderLight: 'border-slate-300',
+    description: 'Sem resposta há muito tempo, sem continuidade',
+    detail:
+      'Aquele lead que não responde há muito tempo, não retornou as mensagens, não deu continuidade ao processo, está há muito tempo sem retorno.',
+  },
   {
     id: 'primeiro_contato',
     name: 'Primeiro Contato',
-    color: '#94A3B8',
-    description: 'Interesse inicial chegado por canais digitais',
+    color: '#0284C7', // azul
+    bgLight: 'bg-sky-50',
+    borderLight: 'border-sky-200',
+    description: 'Prospect inicial para converter em paciente',
+    detail:
+      'Prospect (a pessoa que ainda não é paciente, não tem horário conosco e não tem cadastro ainda) entra em contato / primeiro contato — nesse primeiro momento o objetivo é converter esse prospect em paciente, ou seja, agendamento de avaliação (chegada).',
   },
   {
-    id: 'avaliacao',
-    name: 'Avaliação',
-    color: '#F59E0B',
-    description: 'Consulta diagnóstica ou anamnese marcada/realizada',
+    id: 'agendamento',
+    name: 'Agendamento',
+    color: '#0D9488', // teal
+    bgLight: 'bg-teal-50',
+    borderLight: 'border-teal-200',
+    description: 'Conversão ativa para agendar a avaliação',
+    detail: 'Agendamento de Avaliação — conversar e tentar converter até conseguir agendar.',
   },
   {
-    id: 'fechamento_programa',
-    name: 'Fechamento de Programa',
-    color: '#22C55E',
-    description: 'Proposta e negociação do plano de cuidado',
+    id: 'monitoramento',
+    name: 'Monitoramento',
+    color: '#D97706', // âmbar
+    bgLight: 'bg-amber-50',
+    borderLight: 'border-amber-200',
+    description: 'Até o dia da avaliação: confirmar presença ou falta',
+    detail: 'Até o dia da avaliação — confirmar se o paciente veio ou não (faltou ou desmarcou).',
   },
   {
-    id: 'acompanhamento',
-    name: 'Acompanhamento',
-    color: '#06B6D4',
-    description: 'Tratamento em andamento com sessões ativas',
+    id: 'em_negociacao',
+    name: 'Em Negociação',
+    color: '#2563EB', // azul royal / negociação
+    bgLight: 'bg-blue-50',
+    borderLight: 'border-blue-200',
+    description: 'Pós-avaliação: confirmação do programa',
+    detail:
+      'Após a avaliação, monitorar tempo de retorno sobre a confirmação de qual programa de tratamento irá seguir. Se não for seguir, descobrir o porquê e redirecionar para a última etapa, Reativação.',
   },
   {
     id: 'renovacao',
     name: 'Renovação',
-    color: '#A855F7',
-    description: 'Próximo do término de ciclo para continuidade',
+    color: '#7C3AED', // roxo/violeta
+    bgLight: 'bg-purple-50',
+    borderLight: 'border-purple-200',
+    description: 'Menos de 30 dias para fim do programa',
+    detail:
+      'Clientes que estão a menos de 30 dias de finalizar o processo/programa de tratamento. Fomentar: como está, se seus problemas e dificuldades foram sanados, e sugerir criar processo contínuo de cuidado com a saúde, minimizando possíveis complicações futuras e melhorando qualidade de vida.',
   },
   {
     id: 'reativacao',
     name: 'Reativação',
-    color: '#F43F5E',
-    description: 'Pacientes em pausa ou inatividade prolongada',
+    color: '#E11D48', // tom de alerta/oportunidade carmim/rosa choque
+    bgLight: 'bg-rose-50',
+    borderLight: 'border-rose-300',
+    description: 'Não renovou ou não agendou: oportunidade de venda',
+    detail:
+      'Todo cliente que não renova, ou não fez agendamento mas mostrou interesse em algum momento — existe oportunidade aqui para vender o programa.',
   },
 ]
 

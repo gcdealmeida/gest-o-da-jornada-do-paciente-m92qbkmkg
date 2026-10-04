@@ -73,6 +73,7 @@ export default function PatientJourney() {
   }
 
   const currentStageIndex = STAGES.findIndex((s) => s.id === patient.stage)
+  const currentStageObj = STAGES[currentStageIndex] || STAGES[0]
 
   return (
     <div className="space-y-6">
@@ -97,8 +98,15 @@ export default function PatientJourney() {
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                 {patient.name}
               </h1>
-              <Badge className="bg-teal-50 text-teal-800 border-teal-200 text-xs font-semibold capitalize">
-                {patient.stage.replace(/_/g, ' ')}
+              <Badge
+                className="text-xs font-bold border"
+                style={{
+                  backgroundColor: `${currentStageObj.color}15`,
+                  color: currentStageObj.color,
+                  borderColor: `${currentStageObj.color}40`,
+                }}
+              >
+                {currentStageObj.name}
               </Badge>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -132,37 +140,58 @@ export default function PatientJourney() {
         </div>
       </div>
 
-      {/* Horizontal 6-Step Progress Stepper */}
-      <Card className="border-slate-200 bg-white shadow-sm p-4">
-        <div className="relative flex items-center justify-between">
-          <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-slate-200 -z-0" />
-          {STAGES.map((s, idx) => {
-            const isCompleted = idx < currentStageIndex
-            const isCurrent = idx === currentStageIndex
+      {/* Horizontal 7-Step Progress Stepper */}
+      <Card className="border-slate-200 bg-white shadow-sm p-4 overflow-x-auto">
+        <div className="min-w-[680px]">
+          <div className="relative flex items-center justify-between">
+            <div className="absolute left-6 right-6 top-4.5 -translate-y-1/2 h-1 bg-slate-200 -z-0" />
+            {STAGES.map((s, idx) => {
+              const isCompleted = idx < currentStageIndex
+              const isCurrent = idx === currentStageIndex
 
-            return (
-              <div key={s.id} className="relative z-10 flex flex-col items-center">
-                <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-xs ${
-                    isCurrent
-                      ? 'bg-teal-600 text-white ring-4 ring-teal-100 animate-pulse-ring'
-                      : isCompleted
-                        ? 'bg-emerald-500 text-white'
-                        : 'bg-white border-2 border-slate-300 text-slate-400'
-                  }`}
-                >
-                  {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
+              return (
+                <div key={s.id} className="relative z-10 flex flex-col items-center">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-xs ${
+                      isCurrent
+                        ? 'text-white ring-4 ring-offset-1'
+                        : isCompleted
+                          ? 'bg-emerald-500 text-white'
+                          : 'bg-white border-2 border-slate-300 text-slate-400'
+                    }`}
+                    style={
+                      isCurrent
+                        ? {
+                            backgroundColor: s.color,
+                            borderColor: s.color,
+                          }
+                        : {}
+                    }
+                  >
+                    {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
+                  </div>
+                  <span
+                    className={`text-[11px] font-bold mt-2 text-center max-w-[85px] leading-tight ${
+                      isCurrent ? 'font-extrabold' : 'text-slate-500'
+                    }`}
+                    style={isCurrent ? { color: s.color } : {}}
+                  >
+                    {s.name}
+                  </span>
                 </div>
-                <span
-                  className={`text-[11px] font-bold mt-2 text-center max-w-[80px] hidden sm:block ${
-                    isCurrent ? 'text-teal-700 font-extrabold' : 'text-slate-500'
-                  }`}
-                >
-                  {s.name}
-                </span>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+
+          {/* Current Stage Explanation Note */}
+          <div className="mt-4 p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
+            <div>
+              <span className="font-bold text-slate-800">
+                Objetivo da etapa atual ({currentStageObj.name}):{' '}
+              </span>
+              <span>{currentStageObj.detail}</span>
+            </div>
+          </div>
         </div>
       </Card>
 

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T17:34:24.333Z",
+  "generatedAt": "2026-10-04T20:12:24.211Z",
   "collections": [
     {
       "name": "users",
@@ -99,10 +99,11 @@
           "required": false,
           "system": false,
           "selectValues": [
+            "lead_frio",
             "primeiro_contato",
-            "avaliacao",
-            "fechamento_programa",
-            "acompanhamento",
+            "agendamento",
+            "monitoramento",
+            "em_negociacao",
             "renovacao",
             "reativacao"
           ]
@@ -206,10 +207,11 @@
           "required": false,
           "system": false,
           "selectValues": [
+            "lead_frio",
             "primeiro_contato",
-            "avaliacao",
-            "fechamento_programa",
-            "acompanhamento",
+            "agendamento",
+            "monitoramento",
+            "em_negociacao",
             "renovacao",
             "reativacao"
           ]

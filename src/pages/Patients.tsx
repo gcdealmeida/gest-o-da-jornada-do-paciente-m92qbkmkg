@@ -342,9 +342,23 @@ export default function Patients() {
                     <SheetTitle className="text-base font-bold text-slate-900">
                       {selectedPatient.name}
                     </SheetTitle>
-                    <p className="text-xs text-slate-500 capitalize">
-                      {selectedPatient.stage.replace(/_/g, ' ')}
-                    </p>
+                    <div className="mt-0.5">
+                      {(() => {
+                        const st = STAGES.find((s) => s.id === selectedPatient.stage)
+                        return (
+                          <Badge
+                            className="text-[11px] font-bold border"
+                            style={{
+                              backgroundColor: `${st?.color || '#0d9488'}15`,
+                              color: st?.color || '#0d9488',
+                              borderColor: `${st?.color || '#0d9488'}30`,
+                            }}
+                          >
+                            {st?.name || selectedPatient.stage}
+                          </Badge>
+                        )
+                      })()}
+                    </div>
                   </div>
                 </div>
               </SheetHeader>
@@ -464,7 +478,13 @@ export default function Patients() {
                   <SelectContent>
                     {STAGES.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
-                        {s.name}
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: s.color }}
+                          />
+                          <span>{s.name}</span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>

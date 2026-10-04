@@ -241,7 +241,7 @@ export default function Settings() {
                 Pipeline da Jornada do Paciente
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
-                Os 6 estágios oficiais do ciclo de vida clínico
+                Os 7 estágios oficiais do ciclo de vida clínico (Lead Frio até Reativação)
               </CardDescription>
             </div>
 
@@ -261,11 +261,19 @@ export default function Settings() {
                     />
                     <div>
                       <p className="text-xs font-bold text-slate-900">{s.name}</p>
-                      <p className="text-[11px] text-slate-500">{s.description}</p>
+                      <p className="text-[11px] text-slate-500 leading-tight">{s.description}</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">
-                    Padrão do Sistema
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] font-semibold shrink-0"
+                    style={{
+                      borderColor: `${s.color}50`,
+                      color: s.color,
+                      backgroundColor: `${s.color}10`,
+                    }}
+                  >
+                    Etapa {idx + 1}
                   </Badge>
                 </div>
               ))}

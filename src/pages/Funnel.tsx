@@ -145,6 +145,37 @@ export default function Funnel() {
     }
   }
 
+  // Ação rápida: Quando paciente em negociação não for seguir -> mover para Reativação com justificativa
+  const handleMoveToReactivation = async (e: React.MouseEvent, patient: PatientRecord) => {
+    e.stopPropagation()
+    const confirmMove = window.confirm(
+      `Mover ${patient.name} para "Reativação" por não seguir com o programa de tratamento?`,
+    )
+    if (!confirmMove) return
+
+    setPatients((prev) =>
+      prev.map((p) => (p.id === patient.id ? { ...p, stage: 'reativacao' } : p)),
+    )
+
+    try {
+      await crmService.movePatientStage(
+        patient.id,
+        'reativacao',
+        `${patient.name} direcionado para Reativação (não seguiu proposta)`,
+      )
+      toast({
+        title: 'Redirecionado para Reativação',
+        description: `${patient.name} está disponível para nova oportunidade no funil.`,
+      })
+    } catch (_) {
+      toast({
+        title: 'Erro ao mover para Reativação',
+        variant: 'destructive',
+      })
+      loadData()
+    }
+  }
+
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newName.trim()) return
@@ -196,11 +227,12 @@ export default function Funnel() {
               variant="outline"
               className="bg-teal-50 border-teal-200 text-teal-800 text-xs font-semibold"
             >
-              6 Estágios Ativos
+              7 Estágios Ativos
             </Badge>
           </div>
           <p className="text-sm text-slate-500 font-medium">
-            Arraste os pacientes entre os estágios para registrar a evolução e disparar automações.
+            Jornada completa: Lead Frio até Reativação. Arraste os pacientes entre os estágios para
+            registrar evolução.
           </p>
         </div>
 
@@ -278,12 +310,14 @@ export default function Funnel() {
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
                 <div className="flex items-center gap-2 min-w-0">
                   <span
-                    className="w-3 h-3 rounded-full shrink-0 shadow-sm"
+                    className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm"
                     style={{ backgroundColor: st.color }}
                   />
-                  <h3 className="text-xs font-bold text-slate-800 truncate uppercase tracking-wider">
-                    {st.name}
-                  </h3>
+                  <div className="min-w-0">
+                    <h3 className="text-xs font-extrabold text-slate-800 truncate uppercase tracking-wider">
+                      {st.name}
+                    </h3>
+                  </div>
                 </div>
                 <Badge
                   variant="secondary"
@@ -291,6 +325,11 @@ export default function Funnel() {
                 >
                   {stagePatients.length}
                 </Badge>
+              </div>
+
+              {/* Stage Subtitle/Help */}
+              <div className="mb-2 text-[10px] text-slate-500 leading-tight line-clamp-2 px-1">
+                {st.description}
               </div>
 
               {/* Monthly value sum when applicable */}
@@ -364,8 +403,22 @@ export default function Funnel() {
                           ) : null}
                         </div>
 
+                        {/* Action buttons on card: quick action for Em Negociação */}
+                        {st.id === 'em_negociacao' && (
+                          <div className="mt-2 pt-2 border-t border-slate-100">
+                            <button
+                              type="button"
+                              onClick={(e) => handleMoveToReactivation(e, p)}
+                              className="w-full text-[10px] font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-md py-1 px-1.5 flex items-center justify-center gap-1 transition-colors"
+                              title="Se o paciente não for seguir o tratamento, mover diretamente para Reativação"
+                            >
+                              <span>Não seguiu proposta → Reativação</span>
+                            </button>
+                          </div>
+                        )}
+
                         {/* Bottom: Responsible & Action arrow */}
-                        <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                           <div className="flex items-center gap-1.5 truncate">
                             <div className="w-4 h-4 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-[9px] font-bold">
                               {p.expand?.responsible_id?.name

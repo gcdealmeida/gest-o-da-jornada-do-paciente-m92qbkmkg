@@ -39,7 +39,7 @@ export default function Reports() {
   }, [])
 
   const totalClosed = patients.filter(
-    (p) => p.stage === 'fechamento_programa' || p.stage === 'acompanhamento',
+    (p) => p.stage === 'em_negociacao' || p.stage === 'renovacao',
   ).length
   const totalReactivated = patients.filter((p) => p.stage === 'reativacao').length
   const totalValue = patients.reduce((acc, p) => acc + (p.value_monthly || 0), 0)
@@ -135,7 +135,7 @@ export default function Reports() {
               Conversão por Estágio do Funil
             </CardTitle>
             <CardDescription className="text-xs text-slate-500">
-              Taxa de avanço de pacientes de Primeiro Contato até Renovação
+              Distribuição e taxa de avanço das 7 etapas da jornada clínica
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-0">
