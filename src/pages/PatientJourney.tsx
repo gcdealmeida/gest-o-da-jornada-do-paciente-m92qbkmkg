@@ -268,13 +268,27 @@ export default function PatientJourney() {
           {/* Contact Card */}
           <Card className="border-slate-200 bg-white shadow-sm p-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Dados do Contato
+              Dados do Contato & Documento
             </h4>
             <div className="space-y-2 text-xs">
               <div className="flex items-center gap-2 text-slate-700">
                 <Phone className="w-4 h-4 text-slate-400" />
-                <span>{patient.phone || 'Sem telefone'}</span>
+                <span className="font-mono">{patient.phone || 'Sem telefone'}</span>
               </div>
+              {patient.cpf && (
+                <div className="flex items-center gap-2 text-slate-700">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase w-4">CPF</span>
+                  <span className="font-mono">{patient.cpf}</span>
+                </div>
+              )}
+              {patient.birth_date && (
+                <div className="flex items-center gap-2 text-slate-700">
+                  <Clock className="w-4 h-4 text-slate-400" />
+                  <span>
+                    Nascimento: {new Date(patient.birth_date).toLocaleDateString('pt-BR')}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center gap-2 text-slate-700">
                 <Mail className="w-4 h-4 text-slate-400" />
                 <span>{patient.email || 'Sem e-mail'}</span>
@@ -283,6 +297,31 @@ export default function PatientJourney() {
                 <div className="flex items-center gap-2 text-slate-700">
                   <Instagram className="w-4 h-4 text-slate-400" />
                   <span>{patient.instagram}</span>
+                </div>
+              )}
+              {(patient.street || patient.city) && (
+                <div className="flex items-start gap-2 text-slate-700 pt-1 border-t border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase w-4 mt-0.5">
+                    END
+                  </span>
+                  <div className="text-[11px] text-slate-600">
+                    {patient.street && (
+                      <p>
+                        {patient.street}
+                        {patient.address_number ? `, nº ${patient.address_number}` : ''}
+                        {patient.complement ? ` (${patient.complement})` : ''}
+                      </p>
+                    )}
+                    <p>
+                      {patient.neighborhood ? `${patient.neighborhood}, ` : ''}
+                      {patient.city || ''}
+                      {patient.state ? ` - ${patient.state}` : ''}
+                      {patient.postal_code ? ` | CEP: ${patient.postal_code}` : ''}
+                    </p>
+                    {patient.landmark && (
+                      <p className="text-[10px] text-slate-400 italic">Ref: {patient.landmark}</p>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -304,6 +343,54 @@ export default function PatientJourney() {
             </div>
           </Card>
 
+          {/* Informações Clínicas da Importação / Cadastro */}
+          {(patient.reason_for_visit ||
+            patient.has_pain !== undefined ||
+            patient.pain_location ||
+            patient.physical_activities ||
+            patient.referral_source) && (
+            <Card className="border-slate-200 bg-white shadow-sm p-4 space-y-2 text-xs">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-800">
+                Histórico Clínico e Estilo de Vida
+              </h4>
+              {patient.reason_for_visit && (
+                <div>
+                  <span className="font-semibold text-slate-700">Por que nos procurou: </span>
+                  <span className="text-slate-600">{patient.reason_for_visit}</span>
+                </div>
+              )}
+              {patient.pain_location && (
+                <div>
+                  <span className="font-semibold text-slate-700">Local da Dor/Incômodo: </span>
+                  <span className="text-slate-600">{patient.pain_location}</span>
+                </div>
+              )}
+              {patient.physical_activities && (
+                <div>
+                  <span className="font-semibold text-slate-700">Atividades Praticadas: </span>
+                  <span className="text-slate-600">
+                    {patient.physical_activities}
+                    {patient.activity_frequency ? ` (${patient.activity_frequency})` : ''}
+                  </span>
+                </div>
+              )}
+              {patient.diet_control && (
+                <div>
+                  <span className="font-semibold text-slate-700">Controle Alimentar: </span>
+                  <span className="text-slate-600">{patient.diet_control}</span>
+                </div>
+              )}
+              {patient.referral_source && (
+                <div className="pt-1 border-t border-slate-100">
+                  <span className="font-semibold text-slate-700">Como conheceu: </span>
+                  <span className="text-slate-600">{patient.referral_source}</span>
+                  {patient.referred_by && (
+                    <span className="text-slate-500"> (Indicação: {patient.referred_by})</span>
+                  )}
+                </div>
+              )}
+            </Card>
+          )}
           {/* Open Tasks for this patient */}
           <Card className="border-slate-200 bg-white shadow-sm p-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">

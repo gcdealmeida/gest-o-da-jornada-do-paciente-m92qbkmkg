@@ -35,6 +35,28 @@ export interface PatientRecord {
   score?: number
   last_contact_at?: string
   notes?: string
+  // Dados de cadastro e enriquecimento da clínica SOUL / SportFisio
+  cpf?: string
+  birth_date?: string
+  gender?: string
+  reason_for_visit?: string
+  has_pain?: boolean
+  pain_location?: string
+  practices_physical_activity?: boolean
+  physical_activities?: string
+  activity_frequency?: string
+  activity_duration?: string
+  diet_control?: string
+  street?: string
+  address_number?: string
+  complement?: string
+  neighborhood?: string
+  city?: string
+  state?: string
+  postal_code?: string
+  landmark?: string
+  referral_source?: string
+  referred_by?: string
   created: string
   updated: string
   expand?: {

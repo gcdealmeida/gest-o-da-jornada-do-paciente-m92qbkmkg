@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T20:43:13.813Z",
+  "generatedAt": "2026-10-06T20:31:34.181Z",
   "collections": [
     {
       "name": "users",
@@ -159,13 +159,140 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "cpf",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "birth_date",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "gender",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "reason_for_visit",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "has_pain",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "pain_location",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "practices_physical_activity",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "physical_activities",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "activity_frequency",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "activity_duration",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "diet_control",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "street",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "address_number",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "complement",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "neighborhood",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "city",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "postal_code",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "landmark",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "referral_source",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "referred_by",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [
         "CREATE INDEX idx_patients_stage ON patients (stage)",
         "CREATE INDEX idx_patients_phone ON patients (phone)",
         "CREATE INDEX idx_patients_responsible ON patients (responsible_id)",
-        "CREATE INDEX idx_patients_last_contact ON patients (last_contact_at)"
+        "CREATE INDEX idx_patients_last_contact ON patients (last_contact_at)",
+        "CREATE INDEX `idx_patients_cpf` ON `patients` (cpf)"
       ]
     },
     {

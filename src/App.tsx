@@ -21,6 +21,7 @@ import Tasks from '@/pages/Tasks'
 import Automations from '@/pages/Automations'
 import Patients from '@/pages/Patients'
 import PatientJourney from '@/pages/PatientJourney'
+import ImportPatients from '@/pages/ImportPatients'
 import Agents from '@/pages/Agents'
 import Reports from '@/pages/Reports'
 import Settings from '@/pages/Settings'
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="tasks" element={<Tasks />} />
             <Route path="automations" element={<Automations />} />
             <Route path="patients" element={<Patients />} />
+            <Route path="patients/import" element={<ImportPatients />} />
             <Route path="patients/:id" element={<PatientJourney />} />
             <Route path="agents" element={<Agents />} />
             <Route path="reports" element={<Reports />} />

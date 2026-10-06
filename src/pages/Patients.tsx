@@ -43,6 +43,8 @@ import {
   Phone,
   Mail,
   Instagram,
+  FileSpreadsheet,
+  Upload,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -159,13 +161,24 @@ export default function Patients() {
             Gerenciamento individual, histórico de contatos e controle de jornada
           </p>
         </div>
-        <Button
-          onClick={() => setCreateOpen(true)}
-          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold"
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Novo Paciente
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/patients/import')}
+            className="border-teal-600/30 text-teal-700 hover:bg-teal-50 font-semibold"
+          >
+            <FileSpreadsheet className="w-4 h-4 mr-1.5 text-teal-600" />
+            Importar Planilha
+          </Button>
+
+          <Button
+            onClick={() => setCreateOpen(true)}
+            className="bg-teal-600 hover:bg-teal-700 text-white font-semibold"
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            Novo Paciente
+          </Button>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -367,8 +380,14 @@ export default function Patients() {
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs">
                 <div className="flex items-center gap-2 text-slate-700">
                   <Phone className="w-4 h-4 text-slate-400" />
-                  <span>{selectedPatient.phone || 'Sem telefone'}</span>
+                  <span className="font-mono">{selectedPatient.phone || 'Sem telefone'}</span>
                 </div>
+                {selectedPatient.cpf && (
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase w-4">CPF</span>
+                    <span className="font-mono">{selectedPatient.cpf}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-slate-700">
                   <Mail className="w-4 h-4 text-slate-400" />
                   <span>{selectedPatient.email || 'Sem e-mail cadastrado'}</span>
@@ -379,7 +398,45 @@ export default function Patients() {
                     <span>{selectedPatient.instagram}</span>
                   </div>
                 )}
+                {selectedPatient.city && (
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase w-4">LOC</span>
+                    <span>
+                      {selectedPatient.city}
+                      {selectedPatient.state ? ` - ${selectedPatient.state}` : ''}
+                    </span>
+                  </div>
+                )}
               </div>
+
+              {/* Informações Clínicas e de Origem */}
+              {(selectedPatient.reason_for_visit ||
+                selectedPatient.pain_location ||
+                selectedPatient.referral_source) && (
+                <div className="p-3 bg-teal-50/50 rounded-xl border border-teal-100 space-y-2 text-xs">
+                  <h4 className="font-bold text-teal-900 text-[11px] uppercase tracking-wider">
+                    Contexto da Clínica SOUL
+                  </h4>
+                  {selectedPatient.reason_for_visit && (
+                    <div>
+                      <span className="font-semibold text-slate-700">Motivo da Procura: </span>
+                      <span className="text-slate-600">{selectedPatient.reason_for_visit}</span>
+                    </div>
+                  )}
+                  {selectedPatient.pain_location && (
+                    <div>
+                      <span className="font-semibold text-slate-700">Dor/Incômodo: </span>
+                      <span className="text-slate-600">{selectedPatient.pain_location}</span>
+                    </div>
+                  )}
+                  {selectedPatient.referral_source && (
+                    <div>
+                      <span className="font-semibold text-slate-700">Como conheceu: </span>
+                      <span className="text-slate-600">{selectedPatient.referral_source}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Quick Actions */}
               <div className="space-y-2">
