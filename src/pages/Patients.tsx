@@ -59,6 +59,7 @@ export default function Patients() {
   const [search, setSearch] = useState(initialQuery)
   const [selectedStage, setSelectedStage] = useState('todos')
   const [selectedChannel, setSelectedChannel] = useState('todos')
+  const [sortOrder, setSortOrder] = useState<'default' | 'asc' | 'desc'>('asc')
 
   // Drawer detail state
   const [selectedPatient, setSelectedPatient] = useState<PatientRecord | null>(null)
@@ -138,16 +139,32 @@ export default function Patients() {
     }
   }
 
-  const filtered = patients.filter((p) => {
-    const q = search.toLowerCase()
-    const matchSearch =
-      p.name.toLowerCase().includes(q) ||
-      (p.phone && p.phone.includes(q)) ||
-      (p.email && p.email.toLowerCase().includes(q))
-    const matchStage = selectedStage === 'todos' || p.stage === selectedStage
-    const matchChannel = selectedChannel === 'todos' || p.channel_origin === selectedChannel
-    return matchSearch && matchStage && matchChannel
-  })
+  const filtered = patients
+    .filter((p) => {
+      const q = search.toLowerCase()
+      const matchSearch =
+        p.name.toLowerCase().includes(q) ||
+        (p.phone && p.phone.includes(q)) ||
+        (p.email && p.email.toLowerCase().includes(q))
+      const matchStage = selectedStage === 'todos' || p.stage === selectedStage
+      const matchChannel = selectedChannel === 'todos' || p.channel_origin === selectedChannel
+      return matchSearch && matchStage && matchChannel
+    })
+    .sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return (a.name || '').localeCompare(b.name || '', 'pt-BR', {
+          sensitivity: 'base',
+          numeric: true,
+        })
+      }
+      if (sortOrder === 'desc') {
+        return (b.name || '').localeCompare(a.name || '', 'pt-BR', {
+          sensitivity: 'base',
+          numeric: true,
+        })
+      }
+      return 0
+    })
 
   return (
     <div className="space-y-6">
@@ -219,6 +236,23 @@ export default function Patients() {
               <SelectItem value="email">E-mail</SelectItem>
             </SelectContent>
           </Select>
+
+          <Select
+            value={sortOrder}
+            onValueChange={(val: 'default' | 'asc' | 'desc') => setSortOrder(val)}
+          >
+            <SelectTrigger className="h-9 text-xs border-slate-200 w-[130px]">
+              <div className="flex items-center gap-1.5 truncate">
+                <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <SelectValue placeholder="Ordenar" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">A → Z</SelectItem>
+              <SelectItem value="desc">Z → A</SelectItem>
+              <SelectItem value="default">Recentes</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -229,7 +263,24 @@ export default function Patients() {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
                 <tr>
-                  <th className="py-3 px-4">Paciente</th>
+                  <th
+                    className="py-3 px-4 cursor-pointer select-none hover:text-teal-700 transition-colors"
+                    onClick={() => {
+                      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+                    }}
+                    title="Clique para alternar ordenação por nome"
+                  >
+                    <div className="inline-flex items-center gap-1.5">
+                      <span>Paciente</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      {sortOrder === 'asc' && (
+                        <span className="text-[10px] text-teal-600 font-bold lowercase">(a-z)</span>
+                      )}
+                      {sortOrder === 'desc' && (
+                        <span className="text-[10px] text-teal-600 font-bold lowercase">(z-a)</span>
+                      )}
+                    </div>
+                  </th>
                   <th className="py-3 px-4">Estágio Atual</th>
                   <th className="py-3 px-4">Responsável</th>
                   <th className="py-3 px-4">Origem / Canal</th>
