@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { crmService } from '@/services/crmService'
 import { STAGES, type UserRecord } from '@/types/crm'
@@ -28,11 +29,16 @@ import {
   AlertTriangle,
   Lock,
   Mail,
+  Zap,
 } from 'lucide-react'
 import pb from '@/lib/pocketbase/client'
 import { useToast } from '@/hooks/use-toast'
+import WhatsAppIntegrationSettings from '@/components/WhatsAppIntegrationSettings'
 
 export default function Settings() {
+  const [searchParams] = useSearchParams()
+  const defaultTab = searchParams.get('tab') || 'equipe'
+
   const { user, refreshUser } = useAuth()
   const [teamUsers, setTeamUsers] = useState<UserRecord[]>([])
   const [loading, setLoading] = useState(true)
@@ -157,16 +163,17 @@ export default function Settings() {
         </div>
       </div>
 
-      <Tabs defaultValue="equipe" className="space-y-4">
+      <Tabs defaultValue={defaultTab} className="space-y-4">
         <TabsList className="bg-slate-100 p-1 border border-slate-200">
           <TabsTrigger value="equipe" className="text-xs font-semibold">
             Equipe Clínica
           </TabsTrigger>
+          <TabsTrigger value="whatsapp" className="text-xs font-semibold flex items-center gap-1.5">
+            <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+            WhatsApp Business (Meta)
+          </TabsTrigger>
           <TabsTrigger value="estagios" className="text-xs font-semibold">
             Estágios da Jornada
-          </TabsTrigger>
-          <TabsTrigger value="whatsapp" className="text-xs font-semibold">
-            WhatsApp Demo
           </TabsTrigger>
           <TabsTrigger value="notificacoes" className="text-xs font-semibold">
             Notificações
@@ -281,40 +288,9 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: WhatsApp Demo */}
+        {/* Tab 3: WhatsApp Integration & Connection */}
         <TabsContent value="whatsapp" className="space-y-4">
-          <Card className="border-slate-200 bg-white shadow-sm p-6 space-y-4 max-w-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-1">
-                <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-emerald-600" />
-                  Simulação de WhatsApp (Modo Demo)
-                </CardTitle>
-                <CardDescription className="text-xs text-slate-500 leading-relaxed">
-                  Permite validar toda a experiência de atendimento, movimentações de funil e
-                  respostas automáticas sem a necessidade de verificação de empresa ou aprovação na
-                  Meta Business.
-                </CardDescription>
-              </div>
-              <Switch
-                checked={demoActive}
-                onCheckedChange={setDemoActive}
-                className="data-[state=checked]:bg-teal-600"
-              />
-            </div>
-
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1.5">
-              <p className="font-bold flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                Aviso sobre Integração Oficial Meta
-              </p>
-              <p className="leading-relaxed text-amber-800">
-                O WhatsApp real exige integração com provedor de API oficial (Meta Cloud API ou BSP
-                credenciado) com envio de documentos comerciais e número homologado. O modo demo
-                replica a jornada com fidelidade de 100% no fluxo.
-              </p>
-            </div>
-          </Card>
+          <WhatsAppIntegrationSettings />
         </TabsContent>
 
         {/* Tab 4: Notificações */}

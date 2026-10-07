@@ -58,6 +58,15 @@ export default function Conversations() {
   const [inputContent, setInputContent] = useState('')
   const [sending, setSending] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
+  const [waStatus, setWaStatus] = useState<{
+    is_connected: boolean
+    mode: 'demo' | 'connected'
+    settings: any
+  }>({
+    is_connected: false,
+    mode: 'demo',
+    settings: null,
+  })
 
   // Quick modals from conversation header
   const [appointmentModal, setAppointmentModal] = useState(false)
@@ -73,8 +82,12 @@ export default function Conversations() {
 
   const loadConversations = async () => {
     try {
-      const list = await crmService.getConversations()
+      const [list, wa] = await Promise.all([
+        crmService.getConversations(),
+        crmService.getWhatsAppStatus(),
+      ])
       setConversations(list)
+      setWaStatus(wa)
       if (list.length > 0) {
         if (selectedParamId) {
           const match = list.find((c) => c.id === selectedParamId)
@@ -140,34 +153,73 @@ export default function Conversations() {
     setMessages((prev) => [...prev, tempMsg])
 
     try {
-      await crmService.sendDemoMessage(selectedConv.id, content)
-      const reloaded = await crmService.getMessages(selectedConv.id)
-      setMessages(reloaded)
+      const isConnected = waStatus.is_connected && selectedConv.channel === 'whatsapp'
 
-      // Simulate realistic AI patient reply in Demo Mode (1.5s delay + typing)
-      setTimeout(() => {
-        setIsTyping(true)
-        setTimeout(async () => {
-          setIsTyping(false)
-          const simulatedReplies = [
-            'Muito obrigada pelo acolhimento tão humano! Vou verificar a agenda com o Dr. Guilherme.',
-            'Vocês atendem pelo plano de saúde ou fornecem nota para reembolso?',
-            'Estou com bastante dor na lombar há meses, tem atrapalhado meu trabalho. Como funciona a avaliação?',
-            'Qual o valor para eu fazer a avaliação com o Dr. Guilherme?',
-            'Perfeito, adorei a atenção de vocês na Clínica SOUL!',
-          ]
-          const randomReply = simulatedReplies[Math.floor(Math.random() * simulatedReplies.length)]
-          await crmService.simulateInboundMessage(selectedConv.id, randomReply)
-          const updatedMsgs = await crmService.getMessages(selectedConv.id)
-          setMessages(updatedMsgs)
-        }, 2000)
-      }, 1000)
+      if (isConnected) {
+        // Envio real através da Meta Cloud API
+        const result = await crmService.sendMessage(selectedConv.id, content)
+        if (!result.success) {
+          // Se for bloqueio de janela de 24h, mostrar aviso educativo
+          if (result.requires_template) {
+            toast({
+              title: 'Janela de 24h encerrada',
+              description:
+                result.error ||
+                'A política oficial da Meta exige um Template de Mensagem aprovado para reiniciar o contato fora de 24h.',
+              variant: 'destructive',
+            })
+          } else {
+            toast({
+              title: 'Erro no envio via WhatsApp',
+              description: result.error || 'A Meta rejeitou o envio.',
+              variant: 'destructive',
+            })
+          }
+          // Remover mensagem otimista em caso de erro
+          setMessages((prev) => prev.filter((m) => m.id !== tempMsg.id))
+          return
+        }
+
+        const reloaded = await crmService.getMessages(selectedConv.id)
+        setMessages(reloaded)
+        toast({
+          title: 'Mensagem transmitida',
+          description: 'Enviada com sucesso via WhatsApp Cloud API.',
+        })
+        // No modo conectado, NÃO simula resposta com setTimeout — as respostas chegam de verdade via webhook
+      } else {
+        // MODO DEMO: Envia pela rota demo e simula resposta de paciente com IA
+        await crmService.sendDemoMessage(selectedConv.id, content)
+        const reloaded = await crmService.getMessages(selectedConv.id)
+        setMessages(reloaded)
+
+        // Simula resposta realista de paciente apenas no modo demo
+        setTimeout(() => {
+          setIsTyping(true)
+          setTimeout(async () => {
+            setIsTyping(false)
+            const simulatedReplies = [
+              'Muito obrigada pelo acolhimento tão humano! Vou verificar a agenda com o Dr. Guilherme.',
+              'Vocês atendem pelo plano de saúde ou fornecem nota para reembolso?',
+              'Estou com bastante dor na lombar há meses, tem atrapalhado meu trabalho. Como funciona a avaliação?',
+              'Qual o valor para eu fazer a avaliação com o Dr. Guilherme?',
+              'Perfeito, adorei a atenção de vocês na Clínica SOUL!',
+            ]
+            const randomReply =
+              simulatedReplies[Math.floor(Math.random() * simulatedReplies.length)]
+            await crmService.simulateInboundMessage(selectedConv.id, randomReply)
+            const updatedMsgs = await crmService.getMessages(selectedConv.id)
+            setMessages(updatedMsgs)
+          }, 2000)
+        }, 1000)
+      }
     } catch (_) {
       toast({
         title: 'Erro no envio',
         description: 'Não foi possível enviar a mensagem no momento.',
         variant: 'destructive',
       })
+      setMessages((prev) => prev.filter((m) => m.id !== tempMsg.id))
     } finally {
       setSending(false)
     }
@@ -238,21 +290,46 @@ export default function Conversations() {
 
   return (
     <div className="space-y-4">
-      {/* Demo Mode Dismissible Notice Banner */}
-      <div className="bg-purple-50/90 border border-purple-200/80 rounded-xl p-3 flex items-center justify-between text-xs text-purple-900 shadow-xs">
-        <div className="flex items-center gap-2">
-          <Badge className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px]">
-            MODO DEMO
-          </Badge>
-          <span className="font-medium">
-            Você está no modo demo do WhatsApp — mensagens e respostas de pacientes são simuladas
-            com IA para validação da jornada.
-          </span>
+      {/* WhatsApp Status Banner (Connected vs Demo) */}
+      {waStatus.is_connected ? (
+        <div className="bg-emerald-50/90 border border-emerald-200/80 rounded-xl p-3 flex items-center justify-between text-xs text-emerald-950 shadow-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1">
+              <Check className="w-3 h-3" />
+              WHATSAPP CONECTADO
+            </Badge>
+            <span className="font-medium">
+              Canal oficial ativo ({waStatus.settings?.verified_name || 'Clínica SOUL'} —{' '}
+              {waStatus.settings?.display_phone_number || 'Meta Cloud API'}). Mensagens enviadas em
+              tempo real pela Meta.
+            </span>
+          </div>
+          <button
+            onClick={() => navigate('/settings?tab=whatsapp')}
+            className="text-[11px] text-emerald-700 font-semibold underline cursor-pointer shrink-0"
+          >
+            Ver Integração
+          </button>
         </div>
-        <span className="text-[11px] text-purple-700 font-semibold underline cursor-pointer">
-          Saiba mais
-        </span>
-      </div>
+      ) : (
+        <div className="bg-purple-50/90 border border-purple-200/80 rounded-xl p-3 flex items-center justify-between text-xs text-purple-900 shadow-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px]">
+              MODO DEMO
+            </Badge>
+            <span className="font-medium">
+              Você está no modo demo do WhatsApp — mensagens e respostas são simuladas com IA. Para
+              ativar o envio real, conecte suas credenciais da Meta.
+            </span>
+          </div>
+          <button
+            onClick={() => navigate('/settings?tab=whatsapp')}
+            className="text-[11px] text-purple-700 font-semibold underline cursor-pointer shrink-0"
+          >
+            Conectar WhatsApp Oficial
+          </button>
+        </div>
+      )}
 
       {/* Three Pane Layout */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex h-[760px]">
@@ -357,9 +434,15 @@ export default function Conversations() {
                       <h2 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                         {patient?.name || selectedConv.contact_identifier}
                       </h2>
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-[10px]">
-                        MODO DEMO
-                      </Badge>
+                      {waStatus.is_connected && selectedConv.channel === 'whatsapp' ? (
+                        <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 text-[10px]">
+                          CANAL OFICIAL
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-[10px]">
+                          MODO DEMO
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-[11px] text-slate-500 truncate">
                       {selectedConv.contact_identifier}

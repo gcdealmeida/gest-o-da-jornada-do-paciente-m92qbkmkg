@@ -288,6 +288,108 @@ export const crmService = {
     })
   },
 
+  // WhatsApp Integration (Meta Cloud API)
+  async getWhatsAppStatus(): Promise<{
+    is_connected: boolean
+    mode: 'demo' | 'connected'
+    settings: any
+  }> {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_POCKETBASE_URL}/backend/v1/whatsapp/status`, {
+        headers: {
+          Authorization: pb.authStore.token,
+        },
+      })
+      if (!res.ok) {
+        return { is_connected: false, mode: 'demo', settings: null }
+      }
+      return await res.json()
+    } catch {
+      return { is_connected: false, mode: 'demo', settings: null }
+    }
+  },
+
+  async testWhatsAppConnection(data: {
+    phone_number_id: string
+    waba_id?: string
+    access_token: string
+    verify_token?: string
+    save?: boolean
+  }): Promise<{
+    ok: boolean
+    verified_name?: string
+    display_phone_number?: string
+    quality_rating?: string
+    error?: string
+    details?: any
+  }> {
+    const res = await fetch(
+      `${import.meta.env.VITE_POCKETBASE_URL}/backend/v1/whatsapp/test-connection`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: pb.authStore.token,
+        },
+        body: JSON.stringify(data),
+      },
+    )
+    return await res.json()
+  },
+
+  async disconnectWhatsApp(): Promise<{ ok: boolean; mode: string }> {
+    const res = await fetch(
+      `${import.meta.env.VITE_POCKETBASE_URL}/backend/v1/whatsapp/disconnect`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: pb.authStore.token,
+        },
+      },
+    )
+    return await res.json()
+  },
+
+  async sendMessage(
+    conversationId: string,
+    content: string,
+  ): Promise<{
+    success: boolean
+    message?: MessageRecord
+    mode?: 'demo' | 'connected'
+    error?: string
+    requires_template?: boolean
+  }> {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_POCKETBASE_URL}/backend/v1/whatsapp/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: pb.authStore.token,
+        },
+        body: JSON.stringify({ conversation_id: conversationId, content }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.message) {
+        return {
+          success: false,
+          error: data.error || 'Falha ao enviar mensagem',
+          requires_template: data.requires_template || false,
+        }
+      }
+      return {
+        success: true,
+        message: data.message,
+        mode: data.mode || 'demo',
+      }
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err?.message || 'Falha de conexão',
+      }
+    }
+  },
+
   // Users / Team
   async getTeamUsers(): Promise<UserRecord[]> {
     return pb.collection('users').getFullList<UserRecord>({

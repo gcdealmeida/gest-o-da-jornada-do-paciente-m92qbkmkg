@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-07T00:23:00.414Z",
+  "generatedAt": "2026-10-07T08:57:57.612Z",
   "collections": [
     {
       "name": "users",
@@ -864,6 +864,94 @@
         "CREATE INDEX idx_autologs_patient ON automation_logs (patient_id)",
         "CREATE INDEX idx_autologs_created ON automation_logs (created)"
       ]
+    },
+    {
+      "name": "whatsapp_settings",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "phone_number_id",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "waba_id",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "access_token",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "verify_token",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "is_active",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "verified_name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "display_phone_number",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "quality_rating",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "last_tested_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "last_error",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_wa_is_active ON whatsapp_settings (is_active)"]
     }
   ]
 }

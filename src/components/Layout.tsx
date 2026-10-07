@@ -54,6 +54,7 @@ const NAV_ITEMS = [
   { path: '/patients/import', label: 'Importar Planilha', icon: FileSpreadsheet },
   { path: '/agents', label: 'Agentes IA', icon: Bot },
   { path: '/reports', label: 'Relatórios', icon: BarChart3 },
+  { path: '/settings?tab=whatsapp', label: 'Conexão WhatsApp', icon: MessageSquare },
   { path: '/settings', label: 'Configurações', icon: Settings },
 ]
 

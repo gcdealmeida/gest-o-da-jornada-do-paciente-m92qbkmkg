@@ -194,6 +194,35 @@ export interface AutomationLogRecord {
   }
 }
 
+export interface WhatsAppIntegrationStatus {
+  is_connected: boolean
+  mode: 'demo' | 'connected'
+  settings: {
+    id: string
+    phone_number_id: string
+    waba_id?: string
+    verify_token: string
+    masked_token?: string
+    verified_name?: string
+    display_phone_number?: string
+    quality_rating?: string
+    last_tested_at?: string
+    last_error?: string
+    is_active: boolean
+  } | null
+}
+
+export interface WhatsAppTestResult {
+  ok: boolean
+  verified_name?: string
+  display_phone_number?: string
+  quality_rating?: string
+  phone_number_id?: string
+  error?: string
+  requires_template?: boolean
+  details?: Record<string, unknown>
+}
+
 export const STAGES: {
   id: StageId
   name: string
