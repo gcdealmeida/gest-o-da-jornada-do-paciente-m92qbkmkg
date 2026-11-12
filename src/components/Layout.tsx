@@ -21,6 +21,7 @@ import {
   X,
   Activity,
   UserCheck,
+  FlaskConical,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -54,6 +55,7 @@ const NAV_ITEMS = [
   { path: '/patients/import', label: 'Importar Planilha', icon: FileSpreadsheet },
   { path: '/agents', label: 'Agentes IA', icon: Bot },
   { path: '/reports', label: 'Relatórios', icon: BarChart3 },
+  { path: '/test-scenarios', label: 'Cenários de Teste', icon: FlaskConical },
   { path: '/settings?tab=whatsapp', label: 'Conexão WhatsApp', icon: MessageSquare },
   { path: '/settings', label: 'Configurações', icon: Settings },
 ]

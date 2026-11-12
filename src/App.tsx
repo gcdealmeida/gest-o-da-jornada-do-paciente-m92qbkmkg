@@ -25,6 +25,7 @@ import ImportPatients from '@/pages/ImportPatients'
 import Agents from '@/pages/Agents'
 import Reports from '@/pages/Reports'
 import Settings from '@/pages/Settings'
+import TestScenarios from '@/pages/TestScenarios'
 import NotFound from '@/pages/NotFound'
 
 export default function App() {
@@ -61,6 +62,7 @@ export default function App() {
             <Route path="agents" element={<Agents />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="test-scenarios" element={<TestScenarios />} />
           </Route>
 
           {/* 404 Route */}
