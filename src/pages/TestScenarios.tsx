@@ -22,9 +22,11 @@ import { Badge } from '@/components/ui/badge'
 import {
   SCENARIOS,
   runScenario,
+  ScenarioSessionError,
   type ScenarioDefinition,
   type ScenarioResult,
 } from '@/lib/demoScenarios'
+import { describeScenarioError, markSessionExpired } from '@/lib/scenarioErrors'
 import { useToast } from '@/hooks/use-toast'
 
 const ICONS: Record<string, React.ElementType> = {
@@ -82,16 +84,36 @@ export default function TestScenarios() {
         description: `Paciente fictício "${result.patientName}" criado e caso rodado de ponta a ponta.`,
       })
       setExpanded(scenario.id)
-    } catch (err: any) {
+    } catch (err: unknown) {
+      if (err instanceof ScenarioSessionError) {
+        updateState(scenario.id, {
+          running: false,
+          error: err.message,
+        })
+        toast({
+          title: 'Sessão expirada',
+          description: err.message,
+          variant: 'destructive',
+        })
+        markSessionExpired()
+        navigate(`/login?from=${encodeURIComponent('/test-scenarios')}`, { replace: true })
+        return
+      }
+      const info = describeScenarioError(err)
       updateState(scenario.id, {
         running: false,
-        error: err?.message || 'Erro ao executar o cenário',
+        error: info.friendlyMessage,
       })
       toast({
-        title: 'Erro no cenário',
-        description: err?.message || 'Não foi possível executar o cenário.',
+        title: info.isAuth ? 'Sessão expirada' : 'Erro no cenário',
+        description: info.friendlyMessage,
         variant: 'destructive',
       })
+      if (info.isAuth) {
+        markSessionExpired()
+        // Sessão ausente/expirada: redireciona ao login com a rota de retorno.
+        navigate(`/login?from=${encodeURIComponent('/test-scenarios')}`, { replace: true })
+      }
     }
   }
 

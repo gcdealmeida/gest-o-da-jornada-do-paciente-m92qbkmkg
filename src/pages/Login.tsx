@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -13,15 +13,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Activity, ArrowRight, Loader2, Lock, Mail } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowRight, Loader2, Lock, Mail } from 'lucide-react'
+import { consumeSessionExpiredFlag } from '@/lib/scenarioErrors'
 
 export default function Login() {
   const [email, setEmail] = useState('guivemax@hotmail.com')
   const [password, setPassword] = useState('Skip@Pass')
   const [loading, setLoading] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [searchParams] = useSearchParams()
   const { login } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    setSessionExpired(consumeSessionExpiredFlag())
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,7 +48,8 @@ export default function Login() {
         title: 'Bem-vindo(a)!',
         description: 'Login realizado com sucesso.',
       })
-      navigate('/')
+      const from = searchParams.get('from')
+      navigate(from && from.startsWith('/') ? from : '/')
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : 'Credenciais inválidas. Verifique seu e-mail e senha.'
@@ -76,6 +84,15 @@ export default function Login() {
             <CardDescription className="text-slate-500">
               Acesse o painel integrado da sua clínica
             </CardDescription>
+            {sessionExpired && (
+              <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>
+                  Sua sessão expirou por inatividade. Faça login novamente para continuar — seus
+                  dados estão salvos.
+                </span>
+              </div>
+            )}
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">

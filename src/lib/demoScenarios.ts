@@ -1,5 +1,6 @@
 import pb from '@/lib/pocketbase/client'
 import { crmService } from '@/services/crmService'
+import { ensureValidSession } from '@/lib/scenarioErrors'
 import { STAGES, type JourneyEventRecord, type PatientRecord, type StageId } from '@/types/crm'
 
 // ---------------------------------------------------------------------------
@@ -517,6 +518,14 @@ export interface ScenarioRunCallbacks {
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+/** Erro de sessão: a página de cenários usa isso para redirecionar ao login. */
+export class ScenarioSessionError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ScenarioSessionError'
+  }
+}
+
 function fill(text: string, person: DemoPerson): string {
   return text.replaceAll('{nome}', person.name.split(' ')[0])
 }
@@ -525,6 +534,13 @@ export async function runScenario(
   scenario: ScenarioDefinition,
   callbacks?: ScenarioRunCallbacks,
 ): Promise<ScenarioResult> {
+  // Garante sessão válida antes de qualquer escrita no backend: renova o token
+  // quando possível e sinaliza com erro amigável quando está expirada.
+  const sessionError = await ensureValidSession()
+  if (sessionError) {
+    throw new ScenarioSessionError(sessionError.friendlyMessage)
+  }
+
   const person = generatePerson()
   const steps = scenario.buildSteps(person)
   const events: { type: string; title: string; description: string }[] = []
